@@ -26,6 +26,8 @@ wheels/
 *.egg
 MANIFEST
 assets/files/
+*.vtk
+*.txt
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
