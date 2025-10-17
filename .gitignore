@@ -112,6 +112,7 @@ data/
 input/
 saved/
 datasets/
+batch_anatomical_processed/
 
 # editor, os cache directory
 .vscode/
