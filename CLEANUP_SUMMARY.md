@@ -55,6 +55,9 @@ python predict.py --c configs/DTU3D-PLY-ultimate-final.json --n aligned.ply
 ### 📋 **Test için:**
 ```bash
 python ply_test_suite.py
+
+python anatomical_aligner.py  # Process PLY files
+python predict.py --c configs/DTU3D-anatomical.json --n anatomical_aligned_[file].ply
 ```
 
 **Sistem artık minimal ve temiz!** 🎉
