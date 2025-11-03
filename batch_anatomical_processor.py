@@ -28,7 +28,7 @@ class BatchAnatomicalProcessor:
         else:
             print(f"📁 Using existing output directory: {self.output_dir}")
     
-    def get_available_ply_files(self, max_men=6, max_women=6):
+    def get_available_ply_files(self, max_men=None, max_women=None):
         """Get available PLY files from men and women directories"""
         men_dir = "assets/files/class1/men"
         women_dir = "assets/files/class1/women"
@@ -40,13 +40,19 @@ class BatchAnatomicalProcessor:
         if os.path.exists(men_dir):
             all_men = [f for f in os.listdir(men_dir) if f.endswith('.ply')]
             all_men.sort(key=lambda x: int(x.split('.')[0]))  # Sort numerically
-            men_files = [os.path.join(men_dir, f) for f in all_men[:max_men]]
+            if max_men is None:
+                men_files = [os.path.join(men_dir, f) for f in all_men]
+            else:
+                men_files = [os.path.join(men_dir, f) for f in all_men[:max_men]]
         
         # Get women files
         if os.path.exists(women_dir):
             all_women = [f for f in os.listdir(women_dir) if f.endswith('.ply')]
             all_women.sort(key=lambda x: int(x.split('.')[0]))  # Sort numerically
-            women_files = [os.path.join(women_dir, f) for f in all_women[:max_women]]
+            if max_women is None:
+                women_files = [os.path.join(women_dir, f) for f in all_women]
+            else:
+                women_files = [os.path.join(women_dir, f) for f in all_women[:max_women]]
         
         return men_files, women_files
     
@@ -301,8 +307,8 @@ def main():
     # Setup
     processor.setup_output_directory()
     
-    # Get available files
-    men_files, women_files = processor.get_available_ply_files(max_men=6, max_women=6)
+    # Get available files - process ALL files
+    men_files, women_files = processor.get_available_ply_files()  # No limits = process all
     all_files = men_files + women_files
     
     if not all_files:
