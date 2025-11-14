@@ -42,12 +42,18 @@ def get_device_and_load_model(config):
     device = get_working_device(config)
     checkpoint = torch.load(check_point_name, map_location=device)
 
-    state_dict = checkpoint['state_dict']
+    # Handle different checkpoint formats
+    if 'state_dict' in checkpoint:
+        state_dict = checkpoint['state_dict']
+        epochs = checkpoint.get('epoch', 'unknown')
+    else:
+        # Direct state dict file
+        state_dict = checkpoint
+        epochs = 'unknown'
+    
     if config['n_gpu'] > 1 and device == torch.device('cuda'):
         model = torch.nn.DataParallel(model)
     model.load_state_dict(state_dict)
-
-    epochs = checkpoint['epoch']
     logger.debug('Model was trained for ' + str(epochs) + ' epochs')
 
     # prepare model for predicting
@@ -228,13 +234,14 @@ def test_on_bu_3d_fe(config):
     res_f = open(result_file, "w")
     start_time = time.time()
     for f_name in files:
-        lm_name = bu_3dfe_dir + f_name + '_RAW_84_LMS.txt'
-        wrl_name = bu_3dfe_dir + f_name + '_RAW.wrl'
+        # BU-3DFE specific paths
+        lm_name = 'data/BU_3DFE_LANDMARKS/' + f_name + '_RAW_84_LMS.txt'
+        wrl_name = 'data/BU_3DFE/' + f_name + '_RAW.wrl'
         # bmp_name = bu_3dfe_dir + f_name + '_F3D.bmp'
 
-        gt_lms = read_3d_landmarks(lm_name)
-        if os.path.isfile(wrl_name):
-            print('Computing file ', idx, ' of ', len(files))
+        if os.path.isfile(lm_name) and os.path.isfile(wrl_name):
+            print('Computing file ', idx, ' of ', len(files), ' - ', f_name)
+            gt_lms = read_3d_landmarks(lm_name)
 
             render_3d = Render3D(config)
             image_stack, transform_stack = render_3d.render_3d_file(wrl_name)
